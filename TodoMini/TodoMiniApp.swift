@@ -11,7 +11,8 @@ import SwiftUI
 struct TodoMiniApp: App {
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            TodoListView() // ← 用我们刚写好的视图替换原来的 ContentView
         }
     }
 }
+
