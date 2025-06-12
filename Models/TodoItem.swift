@@ -27,7 +27,8 @@ struct TodoItem: Identifiable, Codable {
 
     var category: Category? = nil
 
-    var priority: Int? = nil            // 优先级（1-5）
+    var priority: Int? = nil  // 优先级（1=低, 2=中, 3=高）
+
     var notes: String? = nil            // 备注
     var isStarred: Bool = false         // 是否标星/置顶
 }

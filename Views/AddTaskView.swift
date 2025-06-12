@@ -16,68 +16,104 @@ struct AddTaskView: View {
     @State private var reminderDate: Date = Date()
     @State private var durationInMin: Int = 0
     @State private var category: TodoItem.Category = .personal
-    @State private var priority: Int = 1
+    @State private var priority: Int = 2
     @State private var notes: String = ""
     @State private var isStarred: Bool = false
 
     var body: some View {
-        NavigationView {
-            Form {
-                Section(header: Text("Task")) {
-                    TextField("Title", text: $title)
-                    Toggle("Important ⭐️", isOn: $isStarred)
+        ScrollView {
+            VStack(alignment: .leading, spacing: 20) {
+                Text("Add Task")
+                    .font(.title)
+                    .bold()
+
+                TextField("Title", text: $title)
+                    .padding()
+                    .background(Color(.secondarySystemBackground))
+                    .cornerRadius(10)
+
+                Toggle("Important ⭐️", isOn: $isStarred)
+
+                VStack(alignment: .leading) {
+                    Text("Priority")
+                        .font(.headline)
+                    Picker("Priority", selection: $priority) {
+                        Text("Low").tag(1)
+                        Text("Medium").tag(2)
+                        Text("High").tag(3)
+                    }
+                    .pickerStyle(SegmentedPickerStyle())
                 }
 
-                Section(header: Text("Time")) {
-                    DatePicker("Due Date", selection: $dueDate, displayedComponents: [.date, .hourAndMinute])
-                    DatePicker("Reminder", selection: $reminderDate, displayedComponents: [.date, .hourAndMinute])
-                    Stepper("Duration: \(durationInMin) min", value: $durationInMin, in: 0...240, step: 5)
-                }
-
-                Section(header: Text("More")) {
+                VStack(alignment: .leading) {
+                    Text("Category")
+                        .font(.headline)
                     Picker("Category", selection: $category) {
                         ForEach(TodoItem.Category.allCases) { cat in
                             Text(cat.rawValue).tag(cat)
                         }
                     }
-
-                    Picker("Priority", selection: $priority) {
-                        ForEach(1...5, id: \.self) { level in
-                            Text("Priority \(level)")
-                        }
-                    }
-                    TextField("Notes", text: $notes, axis: .vertical)
-                }
-            }
-            .navigationTitle("Add Task")
-            .toolbar {
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        let newTodo = TodoItem(
-                            title: title,
-                            isCompleted: false,
-                            createdAt: Date(),
-                            dueDate: dueDate,
-                            reminderDate: reminderDate,
-                            durationInMin: durationInMin,
-                            category: category,
-                            priority: priority,
-                            notes: notes,
-                            isStarred: isStarred
-                        )
-                        viewModel.todos.append(newTodo)
-                        viewModel.saveTodos()
-                        dismiss()
-                    }
-                    .disabled(title.isEmpty)
+                    .pickerStyle(SegmentedPickerStyle())
                 }
 
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
+                VStack(alignment: .leading) {
+                    Text("Due Date")
+                        .font(.headline)
+                    DatePicker("Select Due Date", selection: $dueDate, displayedComponents: [.date, .hourAndMinute])
+                        .labelsHidden()
                 }
+
+                VStack(alignment: .leading) {
+                    Text("Reminder")
+                        .font(.headline)
+                    DatePicker("Reminder", selection: $reminderDate, displayedComponents: [.date, .hourAndMinute])
+                        .labelsHidden()
+                }
+
+                VStack(alignment: .leading) {
+                    Text("Duration (minutes)")
+                        .font(.headline)
+                    Stepper("\(durationInMin) minutes", value: $durationInMin, in: 0...240, step: 5)
+                }
+
+                VStack(alignment: .leading) {
+                    Text("Notes")
+                        .font(.headline)
+                    TextEditor(text: $notes)
+                        .frame(height: 100)
+                        .padding()
+                        .background(Color(.secondarySystemBackground))
+                        .cornerRadius(10)
+                }
+
+                Button(action: {
+                    let newTodo = TodoItem(
+                        title: title,
+                        isCompleted: false,
+                        createdAt: Date(),
+                        dueDate: dueDate,
+                        reminderDate: reminderDate,
+                        durationInMin: durationInMin,
+                        category: category,
+                        priority: priority,
+                        notes: notes,
+                        isStarred: isStarred
+                    )
+                    viewModel.todos.append(newTodo)
+                    viewModel.saveTodos()
+                    dismiss()
+                }) {
+                    Text("Save")
+                        .font(.headline)
+                        .foregroundColor(.white)
+                        .padding()
+                        .frame(maxWidth: .infinity)
+                        .background(Color.blue)
+                        .cornerRadius(10)
+                }
+                .disabled(title.isEmpty)
             }
+            .padding()
         }
     }
 }
